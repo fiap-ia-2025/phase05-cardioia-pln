@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CardioIA - Assistente Cardiológico</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Tahoma, sans-serif;
+        }
+
+        body {
+            
+            background: linear-gradient(rgba(244, 247, 246, 0.4), rgba(244, 247, 246, 0.4)), 
+                        url("{{ url_for('static', filename='img/background.png') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            width: 450px;
+            height: 600px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background-color: #b71c1c;
+            color: #ffffff;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-header img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffffff;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            max-width: 80%;
+        }
+
+        .user-wrapper {
+            align-self: flex-end;
+            align-items: flex-end;
+        }
+
+        .bot-wrapper {
+            align-self: flex-start;
+            align-items: flex-start;
+        }
+
+        .message-author {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #666666;
+            margin-bottom: 3px;
+            padding: 0 4px;
+        }
+
+        .message {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            width: 100%;
+        }
+
+        .user-message {
+            background-color: #007bff;
+            color: #ffffff;
+            border-bottom-right-radius: 2px;
+        }
+
+        .bot-message {
+            background-color: #e9ecef;
+            color: #333333;
+            border-bottom-left-radius: 2px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 12px;
+            border-top: 1px solid #e0e0e0;
+            background-color: #fafafa;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .chat-input-area button {
+            margin-left: 8px;
+            padding: 10px 16px;
+            background-color: #b71c1c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .chat-input-area button:hover {
+            background-color: #9a0007;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <img src="{{ url_for('static', filename='img/avatar.png') }}" alt="Avatar CardioIA">
+            <span>CardioIA - Triagem e Suporte</span>
+        </div>
+        
+        <div class="chat-messages" id="chat-messages">
+            <div class="message-wrapper bot-wrapper">
+                <span class="message-author">CardioIA:</span>
+                <div class="message bot-message">Olá! Sou o CardioIA. Como posso ajudar com suas dúvidas em saúde cardíaca hoje?</div>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="user-input" placeholder="Digite sua mensagem aqui..." onkeydown="handleKeyPress(event)">
+            <button onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const inputField = document.getElementById('user-input');
+            const messageText = inputField.value.trim();
+
+            if (!messageText) return;
+
+            // Mensagem do usuário continua como texto puro por segurança
+            appendMessage('Você:', messageText, 'user-wrapper', 'user-message', false);
+            inputField.value = '';
+
+            try {
+                const response = await fetch('/send_message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: messageText })
+                });
+
+                const data = await response.json();
+                // Resposta do bot passa com a flag true para renderizar o negrito (HTML)
+                appendMessage('CardioIA:', data.response, 'bot-wrapper', 'bot-message', true);
+            } catch (error) {
+                appendMessage('CardioIA:', 'Erro ao se comunicar com o assistente.', 'bot-wrapper', 'bot-message', false);
+            }
+        }
+
+        function appendMessage(authorText, messageText, wrapperClass, messageClass, isHtml = false) {
+            const chatMessages = document.getElementById('chat-messages');
+            
+            const wrapperDiv = document.createElement('div');
+            wrapperDiv.className = `message-wrapper ${wrapperClass}`;
+
+            const authorSpan = document.createElement('span');
+            authorSpan.className = 'message-author';
+            authorSpan.textContent = authorText;
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${messageClass}`;
+
+            if (isHtml) {
+                // Converte sintaxe **texto** em <strong>texto</strong>
+                const formattedText = messageText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                messageDiv.innerHTML = formattedText;
+            } else {
+                messageDiv.textContent = messageText;
+            }
+
+            wrapperDiv.appendChild(authorSpan);
+            wrapperDiv.appendChild(messageDiv);
+            chatMessages.appendChild(wrapperDiv);
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+    </script>
+</body>
+</html>
