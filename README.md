@@ -166,3 +166,7 @@ Acesse a documentação `RELATORIO.md` para ver todas as possibilidades de diál
 O **CardioIA** foi desenvolvido para demonstrar como a integração entre uma arquitetura web leve em Flask e os serviços avançados em **Processamento de Linguagem Natural** (PLN) da **IBM Cloud (watsonx Assistant)** pode proporcionar uma ferramente de triagem médica eficiente, acessível e segura.
 
 Através de uma interface responsiva, o assistente virtual atua como um canal de comunicação direto para responder a dúvidas frequentes sobre saúde cardíaca.
+
+## 🎬 Vídeo explicativo
+
+[Link do vídeo](https://youtu.be/aojf98vFXQo)
