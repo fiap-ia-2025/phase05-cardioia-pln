@@ -66,6 +66,8 @@ Atenção: Não tente dirigir se estiver passando mal. Mantenha a pessoa calma e
 
 Finalizando assim a ação do assistente virtual.
 
+Acesse a documentação `RELATORIO.md` para ver todas as possibilidades de diálogo entre o assistente virtual e o paciente.
+
 ## 🛠️ Arquitetura do Backend (`app.py`)
 
 ### Estruturação
@@ -75,6 +77,7 @@ phase05-cardioia-pln/
 ├── app.py                  # Servidor Flask e integração com IBM watsonx Assistant
 ├── requirements.txt        # Lista de dependências Python para instalação
 ├── README.md               # Documentação técnica e guia de execução
+├── RELATORIO.md            # Documentação das ações do watson assistant
 │
 ├── static/                 # Arquivos estáticos servidos pelo Flask
 │   └── img/
@@ -82,7 +85,7 @@ phase05-cardioia-pln/
 │       └── background.png  # Imagem de fundo temática de cardiologia
 │
 └── templates/
-    └── index.html          # Interface do usuário (HTML5, CSS3, JS Vanilla)
+    └── index.html          # Interface do usuário 
 ```
 
 ### 1. Autenticação e Inicialização
@@ -151,9 +154,12 @@ Copie e cole no seu navegador: **http://127.0.0.1:5000**
 ### 5. Faça perguntas ao assistente virtual
 
 Exemplo de perguntas: 
+
 1. Quais são os sintomas de infarto?
 2. Como funciona triagem de sintomas?
 3. Em caso de emergência, o que fazer?
+
+Acesse a documentação `RELATORIO.md` para ver todas as possibilidades de diálogo entre o assistente virtual e o paciente.
 
 ## 🏁 Conclusão
 
